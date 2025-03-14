@@ -80,15 +80,18 @@ class LogisticRegressor:
         # TODO: Initialize all parameters to 0
         self.weights = np.zeros(n)
         self.bias = 0
+        #print(self.weights)
 
         # TODO: Complete the gradient descent code
         # Tip: You can use the code you had in the previous practice
         # Execute the iterative gradient descent
         for i in range(num_iterations):  # Fill the None here
+            
 
             # For these two next lines, you will need to implement the respective functions
             # Forward propagation
-            y_hat = self.predict_proba(X)
+            y_hat = np.array(self.predict_proba(X))
+            y_hat = y_hat.reshape(-1,1)
             # Compute loss
             loss = self.log_likelihood(y, y_hat)
 
@@ -97,9 +100,21 @@ class LogisticRegressor:
                 print(f"Iteration {i}: Loss {loss}")
 
             # TODO: Implement the gradient values
+            #print("_____________________________________________")
+            #print(y.shape)
+            #print(y_hat.shape)
+            #print((y-y_hat).shape)
+            #print(y-y_hat)
+            #print("-----------------------------")
+            #print(y)
+            #print("______________________--")
+            #print(y_hat)
             # CAREFUL! You need to calculate the gradient of the loss function (*negative log-likelihood*)
-            dw = - 1/m*np.dot(y-y_hat, X)  # Derivative w.r.t. the coefficients
-            db = - 1/m*np.sum(y-y_hat)  # Derivative w.r.t. the intercept
+            dw = - (1/m)*np.dot(X.T,(y-y_hat))  # Derivative w.r.t. the coefficients
+            #print(dw)
+            #print(dw.shape)
+            #print("CACA")
+            db = - (1/m)*np.sum(y-y_hat)  # Derivative w.r.t. the intercept
 
             # Regularization:
             # Apply regularization if it is selected.
@@ -114,7 +129,13 @@ class LogisticRegressor:
                 dw = self.elasticnet_regularization(dw, m, C, l1_ratio)
 
             # Update parameters
+            #print(self.weights.shape)
+            #print("----------------------")
+            #print(dw.shape)
+            
+            dw = dw.ravel()
             self.weights -= learning_rate * dw
+            self.weights.reshape(-1,1)
             self.bias -= learning_rate * db
 
     def predict_proba(self, X):
@@ -183,6 +204,7 @@ class LogisticRegressor:
         """
 
         # TODO:
+        dw = dw.ravel()
         # ADD THE LASSO CONTRIBUTION TO THE DERIVATIVE OF THE OBJECTIVE FUNCTION
         lasso_gradient = (C/m)*(np.sign(self.weights))
         return dw + lasso_gradient
@@ -210,6 +232,10 @@ class LogisticRegressor:
 
         # TODO:
         # ADD THE RIDGE CONTRIBUTION TO THE DERIVATIVE OF THE OBJECTIVE FUNCTION
+        #print(self.weights.shape)
+        dw = dw.ravel()
+        #print(dw.shape)
+        #print("JALAPEÑO)")
         ridge_gradient = (C/m)*self.weights
         return dw + ridge_gradient
 
@@ -239,8 +265,11 @@ class LogisticRegressor:
         """
         # TODO:
         # ADD THE RIDGE CONTRIBUTION TO THE DERIVATIVE OF THE OBJECTIVE FUNCTION
+        dw = dw.ravel()
         # Be careful! You can reuse the previous results and combine them here, but beware how you do this!
         elasticnet_gradient = (C*l1_ratio/m)*(np.sign(self.weights))+(C*(1-l1_ratio)/m)*self.weights
+        #print(dw.shape)
+        #print(elasticnet_gradient.shape)
         return dw + elasticnet_gradient
 
     @staticmethod
