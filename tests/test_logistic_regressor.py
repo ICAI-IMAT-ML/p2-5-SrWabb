@@ -28,6 +28,9 @@ def test_fit_basic(sample_data):
     model.fit(X_train, y_train, num_iterations=100)
 
     assert model.weights is not None
+    print("::::::::::::::::::::::::::::::::::::::::::::::::")
+    print(model.weights.shape)
+    print("------------------------------------------------------------")
     assert model.weights.shape == (X_train.shape[1],)
     assert isinstance(model.bias, (float, np.float64))
 
@@ -183,6 +186,6 @@ def test_maximum_likelihood():
     y_true = np.array([0, 1, 1, 0])
     y_pred = np.array([0.1, 0.9, 0.8, 0.2])
 
-    loss = LogisticRegressor.maximum_likelihood(y_true, y_pred)
+    loss = LogisticRegressor.log_likelihood(y_true, y_pred)
     assert isinstance(loss, float)
     assert loss >= 0
